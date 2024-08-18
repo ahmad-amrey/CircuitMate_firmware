@@ -68,6 +68,8 @@ const char *btn_names[VIRT_BUTTON_MAX] = {
   "CANCEL"
 };
 
+const unsigned long led_toggle_delay_ms = 500;    // the debounce time; increase if the output flickers
+
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.
 const unsigned long debounceDelay = 50;    // the debounce time; increase if the output flickers
@@ -84,13 +86,18 @@ void setup() {
 
   // Initialize the analog pin as an input (optional, as it's default)
   pinMode(analogPin, INPUT);
+
+  // Initilize LED pin
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop() {
   static int lastButtonState = LOW;  // the previous reading from the input pin
   static int buttonState;            // the current reading from the input pin
   static unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
-
+  static unsigned long next_led_toggle_time = 0;
+  static 
+  
 
   // read the state of the switch into a local variable:
   int reading = digitalRead(buttonPin);
@@ -122,6 +129,13 @@ void loop() {
 
   // save the reading. Next time through the loop, it'll be the lastButtonState:
   lastButtonState = reading;
+
+  if(millis() > next_led_toggle_time)
+  {
+    next_led_toggle_time = millis() + led_toggle_delay_ms;
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+  }
+
 }
 
 
