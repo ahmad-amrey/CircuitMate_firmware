@@ -8,6 +8,8 @@
  */
 
 #include <LiquidCrystal.h>
+#include "calculator_app.h"
+#include "resistor_4_bands_calc.h"
 
 // Define pin numbers
 const int analogPin = A0; // Pin connected to the analog sensor
@@ -15,33 +17,12 @@ const int buttonPin = 2;  // Pin connected to the button (active low)
 // LCD pins
 const int rs = 10, en = 9, d4 = 8, d5 = 7, d6 = 6, d7 = 5;
 
-// Define virtual buttons corresponding to resistor color bands
+// Define the calculator applications
 typedef enum
 {
-  VIRT_BUTTON_BLACK = 0,
-  VIRT_BUTTON_BROWN,
-  VIRT_BUTTON_RED,
-  VIRT_BUTTON_ORANGE,
-  VIRT_BUTTON_YELLOW,
-  VIRT_BUTTON_GREEN,
-  VIRT_BUTTON_BLUE,
-  VIRT_BUTTON_VIOLET,
-  VIRT_BUTTON_GREY,
-  VIRT_BUTTON_WHITE,
-  VIRT_BUTTON_GOLD,
-  VIRT_BUTTON_SILVER,
-  VIRT_BUTTON_OPTION,
-  VIRT_BUTTON_CANCEL,
-  VIRT_BUTTON_MAX
-} v_buttons_t;
-
-// Define the screen states
-typedef enum
-{
-  SCREEN_4_BANDS = 0,
-  // SCREEN_5_BANDS,
-  // SCREEN_NONE
-} screen_state_t;
+  APPS_RESISTOR_4_BANDS_CALC = 0,
+  APPS_MAX,
+} apps_t;
 
 // Mapping of analog values to virtual buttons
 const uint16_t analog_v_btn_mapping[VIRT_BUTTON_MAX + 1] = {
@@ -62,31 +43,16 @@ const uint16_t analog_v_btn_mapping[VIRT_BUTTON_MAX + 1] = {
     1500, // Something far
 };
 
-const char *btn_names[VIRT_BUTTON_MAX] = {
-    "BLACK",
-    "BROWN",
-    "RED",
-    "ORANGE",
-    "YELLOW",
-    "GREEN",
-    "BLUE",
-    "VIOLET",
-    "GREY",
-    "WHITE",
-    "GOLD",
-    "SILVER",
-    "OPTION",
-    "CANCEL"};
-
 const unsigned long led_toggle_delay_ms = 500; // LED toggle delay
 const unsigned long debounceDelay = 50;        // Debounce delay
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+resistor_4_bands_calc res_4_calc = resistor_4_bands_calc(&lcd);
 
 // Variables to store state
 int analogValue = 0;
 int bandIndex = 0;
 int bandValues[4] = {0, 0, 0, 0}; // To store color bands
-screen_state_t screenState = SCREEN_4_BANDS;
 
 void setup()
 {
@@ -151,91 +117,26 @@ void process_btn_press()
     }
   }
 
-  // Store the selected band value
-  if (selected_btn < VIRT_BUTTON_OPTION)
+  switch (selected_btn)
   {
-    bandValues[bandIndex] = selected_btn;
-    Serial.print("Selected Band ");
-    Serial.print(bandIndex + 1);
-    Serial.print(": ");
-    Serial.println(btn_names[selected_btn]);
-    bandIndex++;
+  case VIRT_BUTTON_BLACK:
+  case VIRT_BUTTON_BROWN:
+  case VIRT_BUTTON_RED:
+  case VIRT_BUTTON_ORANGE:
+  case VIRT_BUTTON_YELLOW:
+  case VIRT_BUTTON_GREEN:
+  case VIRT_BUTTON_BLUE:
+  case VIRT_BUTTON_VIOLET:
+  case VIRT_BUTTON_GREY:
+  case VIRT_BUTTON_WHITE:
+  case VIRT_BUTTON_GOLD:
+  case VIRT_BUTTON_SILVER:
+  case VIRT_BUTTON_CANCEL:
+    res_4_calc.screen_app(selected_btn);
+    break;
 
-    print_bands();
-
-    // Check if we have all bands selected
-    if (bandIndex == 4)
-    {
-      calculate_resistor_value();
-      bandIndex = 0; // Reset for the next calculation
-    }
+  default:
+    // Just ignore it
+    break;
   }
-}
-
-void calculate_resistor_value()
-{
-  long resistance = 0;
-  int multiplier = 0;
-  char val_str[40] = {0};
-  char resistance_str[40] = {0};
-
-  // Calculate resistance based on selected bands
-    resistance = (bandValues[0] * 10 + bandValues[1]);
-    multiplier = bandValues[2];
-
-  // Apply multiplier
-  for (int i = 0; i < multiplier; i++)
-  {
-    resistance *= 10;
-  }
-
-  // Determine the appropriate unit
-  const char *unit = "ohms";
-  float displayValue = resistance;
-
-  if (resistance >= 1000000)
-  {
-    displayValue = resistance / 1000000.0;
-    unit = "Mohms";
-  }
-  else if (resistance >= 1000)
-  {
-    displayValue = resistance / 1000.0;
-    unit = "kohms";
-  }
-
-  dtostrf(displayValue, 1, 1, val_str);
-  sprintf(resistance_str, "%s %s", val_str, unit);
-
-  // Print the calculated resistance with appropriate unit
-  Serial.print("Calculated Resistance: ");
-  Serial.println(resistance_str);
-
-  lcd.setCursor(0, 1);
-  lcd.print(resistance_str);
-}
-
-void print_bands()
-{
-  char bands_sel_desc[40] = {0};
-  char band_str[4][5] = {0};
-  size_t i = 0;
-
-  // Fill all bands with question mark
-  for (i = 0; i < 4; i++)
-  {
-    band_str[i][0] = '?';
-    band_str[i][1] = '?';
-  }
-
-  // Override set bands with its values
-  for (i = 0; i < bandIndex; i++)
-  {
-    sprintf(band_str[i], "%02d", bandValues[i]);
-  }
-  
-  sprintf(bands_sel_desc, "0:%s,1:%s,2:%s,3:%s", band_str[0], band_str[1], band_str[2], band_str[3]);
-
-  lcd.setCursor(0, 0);
-  lcd.print(bands_sel_desc);
 }
