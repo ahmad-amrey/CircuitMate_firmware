@@ -23,7 +23,7 @@ typedef enum
   VIRT_BUTTON_CANCEL,
   VIRT_BUTTON_NONE,
   VIRT_BUTTON_MAX
-} v_buttons_t;
+} VirtualButton;
 
 static const char *btn_names[VIRT_BUTTON_MAX] = {
     "BLACK",
@@ -41,14 +41,14 @@ static const char *btn_names[VIRT_BUTTON_MAX] = {
     "OPTION",
     "CANCEL"};
 
-class Calculator_app {
+class CalculatorApp {
 public:
-    Calculator_app(LiquidCrystal *lcd_instance);
-    virtual void screen_menu(uint8_t menu_indx) = 0;
-    virtual void screen_app(v_buttons_t pressed_btn) = 0; // Pure virtual function for displaying data
+    CalculatorApp(LiquidCrystal *lcd_instance);
+    virtual void screenMenu(uint8_t menu_indx) = 0;
+    virtual void screenApp(VirtualButton pressed_btn) = 0; // Pure virtual function for displaying data
 
 protected:
-    virtual void reset_state() = 0;
+    virtual void resetState() = 0;
     LiquidCrystal *lcd; // Pointer to the LCD object
 };
 

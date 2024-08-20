@@ -1,24 +1,24 @@
 #include "resistor_4_bands_calc.h"
 
-resistor_4_bands_calc::resistor_4_bands_calc(LiquidCrystal *lcd_instance) : Calculator_app(lcd_instance)
+Resistor4BandsCalc::Resistor4BandsCalc(LiquidCrystal *lcd_instance) : CalculatorApp(lcd_instance)
 {
     // No additional initialization needed, all done in the Screen class
-    reset_state();
+    resetState();
 }
 
-void resistor_4_bands_calc::screen_menu(uint8_t menu_indx)
+void Resistor4BandsCalc::screenMenu(uint8_t menu_indx)
 {
     // Implementation specific to 4-band resistor calculator
 }
 
-void resistor_4_bands_calc::screen_app(v_buttons_t pressed_btn)
+void Resistor4BandsCalc::screenApp(VirtualButton pressed_btn)
 {
 
     if (pressed_btn == VIRT_BUTTON_CANCEL)
     {
-        reset_state();
+        resetState();
         Serial.println("Cancel requested");
-        print_bands();
+        printBands();
         return;
     }
 
@@ -29,24 +29,24 @@ void resistor_4_bands_calc::screen_app(v_buttons_t pressed_btn)
     Serial.println(btn_names[pressed_btn]);
     bandIndex++;
 
-    print_bands();
+    printBands();
 
     // Check if we have all bands selected
     if (bandIndex == 4)
     {
-        calculate_resistor_value();
+        calculateResistorValue();
         bandIndex = 0;                             // Reset for the next calculation
         memset(bandValues, 0, sizeof(bandValues)); // Initialize the array
     }
 }
 
-void resistor_4_bands_calc::reset_state()
+void Resistor4BandsCalc::resetState()
 {
     bandIndex = 0;
     memset(bandValues, 0, sizeof(bandValues)); // Initialize the array
 }
 
-void resistor_4_bands_calc::print_bands()
+void Resistor4BandsCalc::printBands()
 {
     char bands_sel_desc[40] = {0};
     char band_str[4][5] = {0};
@@ -72,7 +72,7 @@ void resistor_4_bands_calc::print_bands()
     lcd->print(bands_sel_desc);
 }
 
-void resistor_4_bands_calc::calculate_resistor_value()
+void Resistor4BandsCalc::calculateResistorValue()
 {
     long resistance = 0;
     int multiplier = 0;

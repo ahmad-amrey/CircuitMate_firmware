@@ -47,7 +47,7 @@ const unsigned long led_toggle_delay_ms = 500; // LED toggle delay
 const unsigned long debounceDelay = 50;        // Debounce delay
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
-resistor_4_bands_calc res_4_calc = resistor_4_bands_calc(&lcd);
+Resistor4BandsCalc res_4_calc = Resistor4BandsCalc(&lcd);
 
 // Variables to store state
 int analogValue = 0;
@@ -104,7 +104,7 @@ void loop()
 
 void process_btn_press()
 {
-  v_buttons_t selected_btn = VIRT_BUTTON_BLACK;
+  VirtualButton selected_btn = VIRT_BUTTON_BLACK;
   analogValue = analogRead(analogPin);
 
   // Determine which button is selected based on the analog value
@@ -112,7 +112,7 @@ void process_btn_press()
   {
     if (analogValue < analog_v_btn_mapping[i + 1])
     {
-      selected_btn = (v_buttons_t)i;
+      selected_btn = (VirtualButton)i;
       break;
     }
   }
@@ -132,7 +132,7 @@ void process_btn_press()
   case VIRT_BUTTON_GOLD:
   case VIRT_BUTTON_SILVER:
   case VIRT_BUTTON_CANCEL:
-    res_4_calc.screen_app(selected_btn);
+    res_4_calc.screenApp(selected_btn);
     break;
 
   default:
