@@ -76,10 +76,23 @@ void Resistor4BandsCalc::calculateResistorValue()
 {
     long resistance = 0;
     float multiplier = 0;
-    char val_str[40] = {0};
-    char resistance_str[40] = {0};
-    const char *unit = "ohms";
     float displayValue = resistance;
+    const char *unit = "ohms";
+    const char *tolerance_str = "";
+    char displayValueStr[40] = {0};
+    char resistance_str_serial[40] = {0};
+    char resistance_str_lcd[40] = {0};
+
+    // make plus minues characters:
+    const static uint8_t plus_minues_char[8] = {
+        0b00100,
+        0b00100,
+        0b11111,
+        0b00100,
+        0b00100,
+        0b00000,
+        0b11111,
+        0b00000};
 
     // Calculate resistance based on selected bands
     resistance = ((bandValues[0] * 10) + bandValues[1]);
@@ -134,7 +147,7 @@ void Resistor4BandsCalc::calculateResistorValue()
         unit = "G ohms";
         break;
     case VIRT_BUTTON_SILVER:
-        unit = " milli";
+        unit = " m";
         break;
 
     default:
@@ -142,15 +155,54 @@ void Resistor4BandsCalc::calculateResistorValue()
         return;
     }
 
+    // Determine the tolerance
+    switch (bandValues[3])
+    {
+    case VIRT_BUTTON_BROWN:
+        tolerance_str = "1%";
+        break;
+    case VIRT_BUTTON_RED:
+        tolerance_str = "2%";
+        break;
+    case VIRT_BUTTON_GREEN:
+        tolerance_str = "0.5%";
+        break;
+    case VIRT_BUTTON_BLUE:
+        tolerance_str = "0.25%";
+        break;
+    case VIRT_BUTTON_VIOLET:
+        tolerance_str = "0.1%";
+        break;
+    case VIRT_BUTTON_GREY:
+        tolerance_str = "0.05%";
+        break;
+    case VIRT_BUTTON_GOLD:
+        tolerance_str = "5%";
+        break;
+    case VIRT_BUTTON_SILVER:
+        tolerance_str = "10%";
+        break;
+    default:
+        // Invalid tolerance selected, just ignore
+        break;
+    }
+
     displayValue = resistance * multiplier;
 
-    dtostrf(displayValue, 1, 1, val_str);
-    sprintf(resistance_str, "%s%s", val_str, unit);
+    dtostrf(displayValue, 1, 1, displayValueStr);
+    sprintf(resistance_str_serial, "%s%s ±%s", displayValueStr, unit, tolerance_str);
+    sprintf(resistance_str_lcd, "%s%s ", displayValueStr, unit);
 
     // Print the calculated resistance with appropriate unit
     Serial.print("Calculated Resistance: ");
-    Serial.println(resistance_str);
+    Serial.println(resistance_str_serial);
+
+    // create a new character
+    lcd->createChar(0, (uint8_t *)plus_minues_char);
 
     lcd->setCursor(0, 1);
-    lcd->print(resistance_str);
+    lcd->print(resistance_str_lcd);
+    // Print plus minues charachter
+    lcd->write(byte(0));
+    lcd->print(tolerance_str);
 }
