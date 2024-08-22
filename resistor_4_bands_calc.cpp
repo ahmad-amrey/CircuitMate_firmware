@@ -75,37 +75,77 @@ void Resistor4BandsCalc::printBands()
 void Resistor4BandsCalc::calculateResistorValue()
 {
     long resistance = 0;
-    int multiplier = 0;
+    float multiplier = 0;
     char val_str[40] = {0};
     char resistance_str[40] = {0};
-
-    // Calculate resistance based on selected bands
-    resistance = (bandValues[0] * 10 + bandValues[1]);
-    multiplier = bandValues[2];
-
-    // Apply multiplier
-    for (int i = 0; i < multiplier; i++)
-    {
-        resistance *= 10;
-    }
-
-    // Determine the appropriate unit
     const char *unit = "ohms";
     float displayValue = resistance;
 
-    if (resistance >= 1000000)
+    // Calculate resistance based on selected bands
+    resistance = ((bandValues[0] * 10) + bandValues[1]);
+
+    // Find multiplier
+    switch (bandValues[2])
     {
-        displayValue = resistance / 1000000.0;
-        unit = "Mohms";
-    }
-    else if (resistance >= 1000)
-    {
-        displayValue = resistance / 1000.0;
-        unit = "kohms";
+    case VIRT_BUTTON_BLACK:
+    case VIRT_BUTTON_ORANGE:
+    case VIRT_BUTTON_BLUE:
+    case VIRT_BUTTON_WHITE:
+        multiplier = 1.0;
+        break;
+    case VIRT_BUTTON_BROWN:
+    case VIRT_BUTTON_YELLOW:
+    case VIRT_BUTTON_VIOLET:
+    case VIRT_BUTTON_SILVER:
+        multiplier = 10.0;
+        break;
+    case VIRT_BUTTON_RED:
+    case VIRT_BUTTON_GREEN:
+    case VIRT_BUTTON_GREY:
+    case VIRT_BUTTON_GOLD:
+        multiplier = 0.1;
+        break;
+
+    default:
+        // Not supposed to be here
+        return;
     }
 
+    // Determine the appropriate unit
+    switch (bandValues[2])
+    {
+    case VIRT_BUTTON_BLACK:
+    case VIRT_BUTTON_BROWN:
+    case VIRT_BUTTON_GOLD:
+        unit = " ohms";
+        break;
+    case VIRT_BUTTON_RED:
+    case VIRT_BUTTON_ORANGE:
+    case VIRT_BUTTON_YELLOW:
+        unit = "k ohms";
+        break;
+    case VIRT_BUTTON_GREEN:
+    case VIRT_BUTTON_BLUE:
+    case VIRT_BUTTON_VIOLET:
+        unit = "M ohms";
+        break;
+    case VIRT_BUTTON_GREY:
+    case VIRT_BUTTON_WHITE:
+        unit = "G ohms";
+        break;
+    case VIRT_BUTTON_SILVER:
+        unit = " milli";
+        break;
+
+    default:
+        // Not supposed to be here
+        return;
+    }
+
+    displayValue = resistance * multiplier;
+
     dtostrf(displayValue, 1, 1, val_str);
-    sprintf(resistance_str, "%s %s", val_str, unit);
+    sprintf(resistance_str, "%s%s", val_str, unit);
 
     // Print the calculated resistance with appropriate unit
     Serial.print("Calculated Resistance: ");
