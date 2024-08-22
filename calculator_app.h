@@ -4,6 +4,9 @@
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 
+#define NOT_IMPLEMENTED                     do {char print_buff[100];sprintf(print_buff, "%s Not implemented", __PRETTY_FUNCTION__);Serial.println(print_buff);} while (0)
+
+
 // Define virtual buttons corresponding to resistor color bands
 typedef enum
 {
@@ -44,11 +47,11 @@ static const char *btn_names[VIRT_BUTTON_MAX] = {
 class CalculatorApp {
 public:
     CalculatorApp(LiquidCrystal *lcd_instance);
-    virtual void screenMenu(uint8_t menu_indx) = 0;
-    virtual void screenApp(VirtualButton pressed_btn) = 0; // Pure virtual function for displaying data
+    virtual void screenMenu(uint8_t menu_indx);
+    virtual void screenApp(VirtualButton pressed_btn); // Pure virtual function for displaying data
 
 protected:
-    virtual void resetState() = 0;
+    virtual void resetState();
     LiquidCrystal *lcd; // Pointer to the LCD object
 };
 

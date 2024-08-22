@@ -8,7 +8,7 @@ Resistor4BandsCalc::Resistor4BandsCalc(LiquidCrystal *lcd_instance) : Calculator
 
 void Resistor4BandsCalc::screenMenu(uint8_t menu_indx)
 {
-    // Implementation specific to 4-band resistor calculator
+    NOT_IMPLEMENTED;
 }
 
 void Resistor4BandsCalc::screenApp(VirtualButton pressed_btn)

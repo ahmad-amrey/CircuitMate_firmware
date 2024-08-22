@@ -47,12 +47,13 @@ const unsigned long led_toggle_delay_ms = 500; // LED toggle delay
 const unsigned long debounceDelay = 50;        // Debounce delay
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
-Resistor4BandsCalc res_4_calc = Resistor4BandsCalc(&lcd);
+// Initlize apps
+Resistor4BandsCalc res_4_calc(&lcd);
+CalculatorApp *apps[APPS_MAX] ={&res_4_calc};
 
 // Variables to store state
-int analogValue = 0;
-int bandIndex = 0;
-int bandValues[4] = {0, 0, 0, 0}; // To store color bands
+static int analogValue = 0;
+static apps_t selected_app = APPS_RESISTOR_4_BANDS_CALC;
 
 void setup()
 {
@@ -132,7 +133,7 @@ void process_btn_press()
   case VIRT_BUTTON_GOLD:
   case VIRT_BUTTON_SILVER:
   case VIRT_BUTTON_CANCEL:
-    res_4_calc.screenApp(selected_btn);
+    apps[selected_app]->screenApp(selected_btn);
     break;
 
   default:
