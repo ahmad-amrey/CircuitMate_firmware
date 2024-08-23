@@ -6,18 +6,30 @@ Resistor4BandsCalc::Resistor4BandsCalc(LiquidCrystal *lcd_instance) : Calculator
     resetState();
 }
 
-void Resistor4BandsCalc::screenMenu(uint8_t menu_indx)
+char* Resistor4BandsCalc::get_app_name(void)
 {
-    NOT_IMPLEMENTED;
+        return "Resistor 4 bands";
 }
 
-void Resistor4BandsCalc::screenApp(VirtualButton pressed_btn)
+void Resistor4BandsCalc::screenApp(VirtualButton pressed_btn, bool is_pressed)
 {
+    if(!is_pressed)
+    {
+        // Nothing to do here, just return
+        return;
+    }
 
     if (pressed_btn == VIRT_BUTTON_CANCEL)
     {
         resetState();
         Serial.println("Cancel requested");
+        printBands();
+        return;
+    }
+
+    if (pressed_btn == VIRT_BUTTON_NONE)
+    {
+        resetState();
         printBands();
         return;
     }

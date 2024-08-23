@@ -6,10 +6,8 @@
 class Resistor4BandsCalc : public CalculatorApp {
 public:
     Resistor4BandsCalc(LiquidCrystal *lcd_instance);
-    void screenMenu(uint8_t menu_indx) override;
-    void screenApp(VirtualButton pressed_btn) override;
-
-protected:
+    char* get_app_name(void) override;
+    void screenApp(VirtualButton pressed_btn, bool is_pressed) override;
     void resetState() override;
     
 private:

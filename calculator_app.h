@@ -47,11 +47,11 @@ static const char *btn_names[VIRT_BUTTON_MAX] = {
 class CalculatorApp {
 public:
     CalculatorApp(LiquidCrystal *lcd_instance);
-    virtual void screenMenu(uint8_t menu_indx);
-    virtual void screenApp(VirtualButton pressed_btn); // Pure virtual function for displaying data
+    virtual char* get_app_name(void);
+    virtual void screenApp(VirtualButton pressed_btn, bool is_pressed); // Pure virtual function for displaying data
+    virtual void resetState();
 
 protected:
-    virtual void resetState();
     LiquidCrystal *lcd; // Pointer to the LCD object
 };
 

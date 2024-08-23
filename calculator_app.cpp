@@ -5,12 +5,12 @@ CalculatorApp::CalculatorApp(LiquidCrystal *lcd_instance)
         this->lcd = lcd_instance;
 }
 
-void CalculatorApp::screenMenu(uint8_t menu_indx)
+char* CalculatorApp::get_app_name(void)
 {
-        NOT_IMPLEMENTED;
+        return "Not implemented";
 }
 
-void CalculatorApp::screenApp(VirtualButton pressed_btn)
+void CalculatorApp::screenApp(VirtualButton pressed_btn, bool is_pressed)
 {
         NOT_IMPLEMENTED;
 }
