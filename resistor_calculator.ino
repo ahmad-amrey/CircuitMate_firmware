@@ -10,6 +10,7 @@
 #include <LiquidCrystal.h>
 #include "calculator_app.h"
 #include "resistor_4_bands_calc.h"
+#include "resistor_5_bands_calc.h"
 
 // Define pin numbers
 const int analogPin = A0; // Pin connected to the analog sensor
@@ -30,6 +31,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 // Initlize apps
 Resistor4BandsCalc res_4_calc(&lcd);
+Resistor5BandsCalc res_5_calc(&lcd);
 CalculatorApp *selected_app = NULL;
 
 // Variables to store state
@@ -152,7 +154,7 @@ VirtualButton get_knob_position()
 
 void refresh_screen_with_menu(VirtualButton selected_btn, bool is_pressed)
 {
-  static const uint8_t MAX_APPS = 1;
+  static const uint8_t MAX_APPS = 2;
   uint8_t app_idx = UINT8_MAX;
   static CalculatorApp *last_selected_app = (CalculatorApp *)SIZE_MAX;
   static char lcd_nav_bar[17] = {0};
@@ -161,7 +163,11 @@ void refresh_screen_with_menu(VirtualButton selected_btn, bool is_pressed)
   {
   case VIRT_BUTTON_BLACK:
     selected_app = &res_4_calc;
-    app_idx = 1;
+    app_idx = selected_btn + 1;
+    break;
+  case VIRT_BUTTON_BROWN:
+    selected_app = &res_5_calc;
+    app_idx = selected_btn + 1;
     break;
 
   default:
@@ -213,11 +219,11 @@ void refresh_screen_with_menu(VirtualButton selected_btn, bool is_pressed)
 
     if (app_idx >= MAX_APPS)
     {
-      lcd_nav_bar[16] = ' ';
+      lcd_nav_bar[15] = ' ';
     }
     else
     {
-      lcd_nav_bar[16] = '>';
+      lcd_nav_bar[15] = '>';
     }
 
     lcd.setCursor(0, 1);
