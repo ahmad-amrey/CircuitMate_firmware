@@ -6,14 +6,14 @@ Resistor5BandsCalc::Resistor5BandsCalc(LiquidCrystal *lcd_instance) : Calculator
     resetState();
 }
 
-char* Resistor5BandsCalc::get_app_name(void)
+char *Resistor5BandsCalc::get_app_name(void)
 {
-        return "Resistor 5 bands";
+    return "Resistor 5 bands";
 }
 
 void Resistor5BandsCalc::screenApp(VirtualButton pressed_btn, bool is_pressed)
 {
-    if(!is_pressed)
+    if (!is_pressed)
     {
         // Nothing to do here, just return
         return;
@@ -77,7 +77,7 @@ void Resistor5BandsCalc::printBands()
         sprintf(band_str[i], "%02d", bandValues[i]);
     }
 
-    sprintf(bands_sel_desc, "%s %s %s %s", band_str[0], band_str[1], band_str[2], band_str[3]);
+    sprintf(bands_sel_desc, "%s %s %s %s %s", band_str[0], band_str[1], band_str[2], band_str[3], band_str[4]);
 
     lcd->clear();
     lcd->setCursor(0, 0);
@@ -89,8 +89,9 @@ void Resistor5BandsCalc::calculateResistorValue()
     long resistance = 0;
     float multiplier = 0;
     float displayValue = resistance;
-    const char *unit = "ohms";
+    const char *unit = "";
     const char *tolerance_str = "";
+    bool valid_tolerance = false;
     char displayValueStr[40] = {0};
     char resistance_str_serial[40] = {0};
     char resistance_str_lcd[40] = {0};
@@ -106,60 +107,72 @@ void Resistor5BandsCalc::calculateResistorValue()
         0b11111,
         0b00000};
 
+    // make ohms characters:
+    const static uint8_t ohms_char[8] = {
+        0b00000,
+        0b01110,
+        0b10001,
+        0b10001,
+        0b10001,
+        0b01010,
+        0b11011,
+        0b00000};
+
     // Calculate resistance based on selected bands
-    resistance = ((bandValues[0] * 10) + bandValues[1]);
+    resistance = ((bandValues[0] * 100) + (bandValues[1] * 10) + (bandValues[2] * 1));
 
     // Find multiplier
-    switch (bandValues[2])
+    switch (bandValues[3])
     {
-    case VIRT_BUTTON_BLACK:
-    case VIRT_BUTTON_ORANGE:
-    case VIRT_BUTTON_BLUE:
-    case VIRT_BUTTON_WHITE:
-        multiplier = 1.0;
-        break;
+    // 1s
     case VIRT_BUTTON_BROWN:
     case VIRT_BUTTON_YELLOW:
     case VIRT_BUTTON_VIOLET:
     case VIRT_BUTTON_SILVER:
-        multiplier = 10.0;
+        multiplier = 0.01;
         break;
+    // 10s
     case VIRT_BUTTON_RED:
     case VIRT_BUTTON_GREEN:
     case VIRT_BUTTON_GREY:
     case VIRT_BUTTON_GOLD:
         multiplier = 0.1;
         break;
-
+    // 100s
+    case VIRT_BUTTON_BLACK:
+    case VIRT_BUTTON_ORANGE:
+    case VIRT_BUTTON_BLUE:
+    case VIRT_BUTTON_WHITE:
+        multiplier = 1.0;
+        break;
     default:
         // Not supposed to be here
         return;
     }
 
     // Determine the appropriate unit
-    switch (bandValues[2])
+    switch (bandValues[3])
     {
-    case VIRT_BUTTON_BLACK:
-    case VIRT_BUTTON_BROWN:
+
+    case VIRT_BUTTON_SILVER:
     case VIRT_BUTTON_GOLD:
-        unit = " ohms";
+    case VIRT_BUTTON_BLACK:
+        unit = " ";
         break;
+    case VIRT_BUTTON_BROWN:
     case VIRT_BUTTON_RED:
     case VIRT_BUTTON_ORANGE:
-    case VIRT_BUTTON_YELLOW:
-        unit = "k ohms";
+        unit = " k";
         break;
+    case VIRT_BUTTON_YELLOW:
     case VIRT_BUTTON_GREEN:
     case VIRT_BUTTON_BLUE:
-    case VIRT_BUTTON_VIOLET:
-        unit = "M ohms";
+        unit = " M";
         break;
+    case VIRT_BUTTON_VIOLET:
     case VIRT_BUTTON_GREY:
     case VIRT_BUTTON_WHITE:
-        unit = "G ohms";
-        break;
-    case VIRT_BUTTON_SILVER:
-        unit = " m";
+        unit = " G";
         break;
 
     default:
@@ -168,31 +181,39 @@ void Resistor5BandsCalc::calculateResistorValue()
     }
 
     // Determine the tolerance
-    switch (bandValues[3])
+    switch (bandValues[4])
     {
     case VIRT_BUTTON_BROWN:
         tolerance_str = "1%";
+        valid_tolerance = true;
         break;
     case VIRT_BUTTON_RED:
         tolerance_str = "2%";
+        valid_tolerance = true;
         break;
     case VIRT_BUTTON_GREEN:
         tolerance_str = "0.5%";
+        valid_tolerance = true;
         break;
     case VIRT_BUTTON_BLUE:
         tolerance_str = "0.25%";
+        valid_tolerance = true;
         break;
     case VIRT_BUTTON_VIOLET:
         tolerance_str = "0.1%";
+        valid_tolerance = true;
         break;
     case VIRT_BUTTON_GREY:
         tolerance_str = "0.05%";
+        valid_tolerance = true;
         break;
     case VIRT_BUTTON_GOLD:
         tolerance_str = "5%";
+        valid_tolerance = true;
         break;
     case VIRT_BUTTON_SILVER:
         tolerance_str = "10%";
+        valid_tolerance = true;
         break;
     default:
         // Invalid tolerance selected, just ignore
@@ -201,9 +222,9 @@ void Resistor5BandsCalc::calculateResistorValue()
 
     displayValue = resistance * multiplier;
 
-    dtostrf(displayValue, 1, 1, displayValueStr);
+    dtostrf(displayValue, 1, 2, displayValueStr);
     sprintf(resistance_str_serial, "%s%s ±%s", displayValueStr, unit, tolerance_str);
-    sprintf(resistance_str_lcd, "%s%s ", displayValueStr, unit);
+    sprintf(resistance_str_lcd, "%s%s", displayValueStr, unit);
 
     // Print the calculated resistance with appropriate unit
     Serial.print("Calculated Resistance: ");
@@ -211,10 +232,16 @@ void Resistor5BandsCalc::calculateResistorValue()
 
     // create a new character
     lcd->createChar(0, (uint8_t *)plus_minues_char);
+    lcd->createChar(1, (uint8_t *)ohms_char);
 
     lcd->setCursor(0, 1);
     lcd->print(resistance_str_lcd);
-    // Print plus minues charachter
-    lcd->write(byte(0));
-    lcd->print(tolerance_str);
+    lcd->write(byte(1));
+    if (valid_tolerance)
+    {
+        // Print plus minues charachter and tolerance value
+        lcd->write(' ');
+        lcd->write(byte(0));
+        lcd->print(tolerance_str);
+    }
 }
