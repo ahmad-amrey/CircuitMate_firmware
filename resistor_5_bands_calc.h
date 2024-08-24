@@ -11,6 +11,7 @@ public:
     void resetState() override;
     
 private:
+    bool is_valid_btn(VirtualButton pressed_btn, uint8_t indx);
     void printBands();
     void calculateResistorValue();
     int bandValues[5];

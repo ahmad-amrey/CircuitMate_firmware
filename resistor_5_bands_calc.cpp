@@ -28,6 +28,11 @@ void Resistor5BandsCalc::screenApp(VirtualButton pressed_btn, bool is_pressed)
         return;
     }
 
+    if (!is_valid_btn(pressed_btn, bandIndex))
+    {
+        return;
+    }
+
     bandValues[bandIndex] = pressed_btn;
     Serial.print("Selected Band ");
     Serial.print(bandIndex + 1);
@@ -52,30 +57,84 @@ void Resistor5BandsCalc::resetState()
     memset(bandValues, 0, sizeof(bandValues)); // Initialize the array
 }
 
+bool Resistor5BandsCalc::is_valid_btn(VirtualButton pressed_btn, uint8_t indx)
+{
+    bool valid = false;
+
+    switch (indx)
+    {
+    case 0:
+    case 1:
+    case 2:
+        if ((pressed_btn >= VIRT_BUTTON_0_BLACK) && (pressed_btn <= VIRT_BUTTON_9_WHITE))
+        {
+            valid = true;
+        }
+        break;
+
+    case 3:
+        if ((pressed_btn >= VIRT_BUTTON_0_BLACK) && (pressed_btn <= VIRT_BUTTON_SILVER))
+        {
+            valid = true;
+        }
+        break;
+    case 4:
+        switch (pressed_btn)
+        {
+        case VIRT_BUTTON_1_BROWN:
+        case VIRT_BUTTON_2_RED:
+        case VIRT_BUTTON_5_GREEN:
+        case VIRT_BUTTON_6_BLUE:
+        case VIRT_BUTTON_7_VIOLET:
+        case VIRT_BUTTON_8_GREY:
+        case VIRT_BUTTON_GOLD:
+        case VIRT_BUTTON_SILVER:
+            valid = true;
+            break;
+
+        default:
+            break;
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    return valid;
+}
+
 void Resistor5BandsCalc::printBands()
 {
-    char bands_sel_desc[40] = {0};
-    char band_str[5][5] = {0};
+    char digits_str[6] = {0};
     size_t i = 0;
 
-    // Fill all bands with question mark
+    // Fill all digits with question mark
     for (i = 0; i < 5; i++)
     {
-        band_str[i][0] = '?';
-        band_str[i][1] = '?';
+        digits_str[i] = '?';
     }
 
-    // Override set bands with its values
+    // Override digits with its values
     for (i = 0; i < bandIndex; i++)
     {
-        sprintf(band_str[i], "%02d", bandValues[i]);
+        if ((bandValues[i] == VIRT_BUTTON_GOLD))
+        {
+            digits_str[i] = 'G';
+        }
+        else if ((bandValues[i] == VIRT_BUTTON_SILVER))
+        {
+            digits_str[i] = 'S';
+        }
+        else
+        {
+            digits_str[i] = '0' + bandValues[i];
+        }
     }
-
-    sprintf(bands_sel_desc, "%s %s %s %s %s", band_str[0], band_str[1], band_str[2], band_str[3], band_str[4]);
 
     lcd->clear();
     lcd->setCursor(0, 0);
-    lcd->print(bands_sel_desc);
+    lcd->print(digits_str);
 }
 
 void Resistor5BandsCalc::calculateResistorValue()
