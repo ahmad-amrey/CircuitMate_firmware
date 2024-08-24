@@ -12,6 +12,7 @@
 #include "resistor_4_bands_calc.h"
 #include "resistor_5_bands_calc.h"
 #include "resistor_smd_3_digits_calc.h"
+#include "resistor_smd_4_digits_calc.h"
 
 // Define pin numbers
 const int analogPin = A0; // Pin connected to the analog sensor
@@ -34,6 +35,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 Resistor4BandsCalc res_4_calc(&lcd);
 Resistor5BandsCalc res_5_calc(&lcd);
 ResistorSMD3DigitsCalc res_smd_3_calc(&lcd);
+ResistorSMD4DigitsCalc res_smd_4_calc(&lcd);
 CalculatorApp *selected_app = NULL;
 
 // Variables to store state
@@ -156,7 +158,7 @@ VirtualButton get_knob_position()
 
 void refresh_screen_with_menu(VirtualButton selected_btn, bool is_pressed)
 {
-  static const uint8_t MAX_APPS = 3;
+  static const uint8_t MAX_APPS = 4;
   uint8_t app_idx = UINT8_MAX;
   static CalculatorApp *last_selected_app = (CalculatorApp *)SIZE_MAX;
   static char lcd_nav_bar[17] = {0};
@@ -173,6 +175,10 @@ void refresh_screen_with_menu(VirtualButton selected_btn, bool is_pressed)
     break;
   case VIRT_BUTTON_2_RED:
     selected_app = &res_smd_3_calc;
+    app_idx = selected_btn + 1;
+    break;
+  case VIRT_BUTTON_3_ORANGE:
+    selected_app = &res_smd_4_calc;
     app_idx = selected_btn + 1;
     break;
 
