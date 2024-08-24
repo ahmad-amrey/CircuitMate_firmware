@@ -16,6 +16,8 @@
 #include "capacitor_3_digits_calc.h"
 #include "game_guess_the_number.h"
 
+// #define BUILD_FOR_CALIBRATION
+
 // Define pin numbers
 const int analogPin = A0; // Pin connected to the analog sensor
 const int buttonPin = 2;  // Pin connected to the button (active low)
@@ -51,6 +53,17 @@ void setup()
   pinMode(buttonPin, INPUT_PULLUP);
   pinMode(analogPin, INPUT);
   pinMode(LED_BUILTIN, OUTPUT);
+
+#ifdef BUILD_FOR_CALIBRATION
+while (1)
+{
+  uint16_t analogValue = 0;
+  analogValue = analogRead(analogPin);
+  Serial.println(analogValue);
+  delay(200);
+}
+
+#endif
 
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
@@ -125,24 +138,24 @@ VirtualButton get_knob_position()
 {
   // Mapping of analog values to virtual buttons
   const uint16_t analog_v_btn_mapping[VIRT_BUTTON_MAX + 1] = {
-      0,
-      6,
-      85,
-      174,
-      260,
-      340,
-      420,
-      490,
-      570,
-      645,
-      720,
-      805,
-      900,
-      975,
+      0,    // Black start
+      2,    // Brown start
+      75,   // Red start
+      175,  // Orange start
+      260,  // Yellow start
+      345,  // Green start
+      433,  // Blue start
+      520,  // Violet start
+      600,  // Grey start
+      680,  // White start
+      760,  // Gold start
+      840,  // Silver start
+      920,  // Menu start
+      1003,  // Cancel start
       1500, // Something far
   };
 
-  int analogValue = 0;
+  uint16_t analogValue = 0;
   VirtualButton knob_on = VIRT_BUTTON_0_BLACK;
 
   analogValue = analogRead(analogPin);
