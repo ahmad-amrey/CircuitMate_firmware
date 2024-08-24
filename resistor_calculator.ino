@@ -14,6 +14,7 @@
 #include "resistor_smd_3_digits_calc.h"
 #include "resistor_smd_4_digits_calc.h"
 #include "capacitor_3_digits_calc.h"
+#include "game_guess_the_number.h"
 
 // Define pin numbers
 const int analogPin = A0; // Pin connected to the analog sensor
@@ -38,6 +39,7 @@ Resistor5BandsCalc res_5_calc(&lcd);
 ResistorSMD3DigitsCalc res_smd_3_calc(&lcd);
 ResistorSMD4DigitsCalc res_smd_4_calc(&lcd);
 Capacitor3DigitsCalc cap_3_calc(&lcd);
+GameGuessTheNumber guess_num_game(&lcd);
 CalculatorApp *selected_app = NULL;
 
 // Variables to store state
@@ -160,7 +162,7 @@ VirtualButton get_knob_position()
 
 void refresh_screen_with_menu(VirtualButton selected_btn, bool is_pressed)
 {
-  static const uint8_t MAX_APPS = 5;
+  static const uint8_t MAX_APPS = 6;
   uint8_t app_idx = UINT8_MAX;
   static CalculatorApp *last_selected_app = (CalculatorApp *)SIZE_MAX;
   static char lcd_nav_bar[17] = {0};
@@ -185,6 +187,10 @@ void refresh_screen_with_menu(VirtualButton selected_btn, bool is_pressed)
     break;
   case VIRT_BUTTON_4_YELLOW:
     selected_app = &cap_3_calc;
+    app_idx = selected_btn + 1;
+    break;
+  case VIRT_BUTTON_5_GREEN:
+    selected_app = &guess_num_game;
     app_idx = selected_btn + 1;
     break;
 
