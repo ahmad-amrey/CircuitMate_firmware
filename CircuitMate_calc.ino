@@ -35,13 +35,15 @@ const unsigned long led_toggle_delay_ms = 500; // LED toggle delay
 const unsigned long DEBOUNCE_DELAY = 50;       // Debounce delay
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
-// Initlize apps
+// Initialize apps
 Resistor4BandsCalc res_4_calc(&lcd);
 Resistor5BandsCalc res_5_calc(&lcd);
 ResistorSMD3DigitsCalc res_smd_3_calc(&lcd);
 ResistorSMD4DigitsCalc res_smd_4_calc(&lcd);
 Capacitor3DigitsCalc cap_3_calc(&lcd);
 GameGuessTheNumber guess_num_game(&lcd);
+
+
 CalculatorApp *selected_app = NULL;
 
 // Variables to store state
