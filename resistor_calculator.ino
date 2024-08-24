@@ -11,6 +11,7 @@
 #include "calculator_app.h"
 #include "resistor_4_bands_calc.h"
 #include "resistor_5_bands_calc.h"
+#include "resistor_smd_3_digits_calc.h"
 
 // Define pin numbers
 const int analogPin = A0; // Pin connected to the analog sensor
@@ -32,6 +33,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 // Initlize apps
 Resistor4BandsCalc res_4_calc(&lcd);
 Resistor5BandsCalc res_5_calc(&lcd);
+ResistorSMD3DigitsCalc res_smd_3_calc(&lcd);
 CalculatorApp *selected_app = NULL;
 
 // Variables to store state
@@ -135,7 +137,7 @@ VirtualButton get_knob_position()
   };
 
   int analogValue = 0;
-  VirtualButton knob_on = VIRT_BUTTON_BLACK;
+  VirtualButton knob_on = VIRT_BUTTON_0_BLACK;
 
   analogValue = analogRead(analogPin);
 
@@ -154,19 +156,23 @@ VirtualButton get_knob_position()
 
 void refresh_screen_with_menu(VirtualButton selected_btn, bool is_pressed)
 {
-  static const uint8_t MAX_APPS = 2;
+  static const uint8_t MAX_APPS = 3;
   uint8_t app_idx = UINT8_MAX;
   static CalculatorApp *last_selected_app = (CalculatorApp *)SIZE_MAX;
   static char lcd_nav_bar[17] = {0};
 
   switch (selected_btn)
   {
-  case VIRT_BUTTON_BLACK:
+  case VIRT_BUTTON_0_BLACK:
     selected_app = &res_4_calc;
     app_idx = selected_btn + 1;
     break;
-  case VIRT_BUTTON_BROWN:
+  case VIRT_BUTTON_1_BROWN:
     selected_app = &res_5_calc;
+    app_idx = selected_btn + 1;
+    break;
+  case VIRT_BUTTON_2_RED:
+    selected_app = &res_smd_3_calc;
     app_idx = selected_btn + 1;
     break;
 
@@ -257,22 +263,22 @@ void refresh_screen_with_app(VirtualButton selected_btn, bool is_pressed)
 {
   switch (selected_btn)
   {
-  case VIRT_BUTTON_BLACK:
-  case VIRT_BUTTON_BROWN:
-  case VIRT_BUTTON_RED:
-  case VIRT_BUTTON_ORANGE:
-  case VIRT_BUTTON_YELLOW:
-  case VIRT_BUTTON_GREEN:
-  case VIRT_BUTTON_BLUE:
-  case VIRT_BUTTON_VIOLET:
-  case VIRT_BUTTON_GREY:
-  case VIRT_BUTTON_WHITE:
+  case VIRT_BUTTON_0_BLACK:
+  case VIRT_BUTTON_1_BROWN:
+  case VIRT_BUTTON_2_RED:
+  case VIRT_BUTTON_3_ORANGE:
+  case VIRT_BUTTON_4_YELLOW:
+  case VIRT_BUTTON_5_GREEN:
+  case VIRT_BUTTON_6_BLUE:
+  case VIRT_BUTTON_7_VIOLET:
+  case VIRT_BUTTON_8_GREY:
+  case VIRT_BUTTON_9_WHITE:
   case VIRT_BUTTON_GOLD:
   case VIRT_BUTTON_SILVER:
   case VIRT_BUTTON_CANCEL:
     selected_app->screenApp(selected_btn, is_pressed);
     break;
-  case VIRT_BUTTON_OPTION:
+  case VIRT_BUTTON_MENU:
     if (is_pressed)
     {
       selected_app->resetState();

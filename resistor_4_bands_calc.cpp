@@ -19,17 +19,11 @@ void Resistor4BandsCalc::screenApp(VirtualButton pressed_btn, bool is_pressed)
         return;
     }
 
-    if (pressed_btn == VIRT_BUTTON_CANCEL)
+    if ((pressed_btn == VIRT_BUTTON_CANCEL) ||
+        (pressed_btn == VIRT_BUTTON_NONE))
     {
         resetState();
         Serial.println("Cancel requested");
-        printBands();
-        return;
-    }
-
-    if (pressed_btn == VIRT_BUTTON_NONE)
-    {
-        resetState();
         printBands();
         return;
     }
@@ -131,22 +125,22 @@ void Resistor4BandsCalc::calculateResistorValue()
 
     // 1s
     case VIRT_BUTTON_GOLD:
-    case VIRT_BUTTON_RED:
-    case VIRT_BUTTON_GREEN:
-    case VIRT_BUTTON_GREY:
+    case VIRT_BUTTON_2_RED:
+    case VIRT_BUTTON_5_GREEN:
+    case VIRT_BUTTON_8_GREY:
         multiplier = 0.1;
         break;
     // 10s
-    case VIRT_BUTTON_BLACK:
-    case VIRT_BUTTON_ORANGE:
-    case VIRT_BUTTON_BLUE:
-    case VIRT_BUTTON_WHITE:
+    case VIRT_BUTTON_0_BLACK:
+    case VIRT_BUTTON_3_ORANGE:
+    case VIRT_BUTTON_6_BLUE:
+    case VIRT_BUTTON_9_WHITE:
         multiplier = 1.0;
         break;
     // 100s
-    case VIRT_BUTTON_BROWN:
-    case VIRT_BUTTON_YELLOW:
-    case VIRT_BUTTON_VIOLET:
+    case VIRT_BUTTON_1_BROWN:
+    case VIRT_BUTTON_4_YELLOW:
+    case VIRT_BUTTON_7_VIOLET:
         multiplier = 10.0;
         break;
     default:
@@ -159,22 +153,22 @@ void Resistor4BandsCalc::calculateResistorValue()
     {
     case VIRT_BUTTON_SILVER:
     case VIRT_BUTTON_GOLD:
-    case VIRT_BUTTON_BLACK:
-    case VIRT_BUTTON_BROWN:
+    case VIRT_BUTTON_0_BLACK:
+    case VIRT_BUTTON_1_BROWN:
         unit = " ";
         break;
-    case VIRT_BUTTON_RED:
-    case VIRT_BUTTON_ORANGE:
-    case VIRT_BUTTON_YELLOW:
+    case VIRT_BUTTON_2_RED:
+    case VIRT_BUTTON_3_ORANGE:
+    case VIRT_BUTTON_4_YELLOW:
         unit = " k";
         break;
-    case VIRT_BUTTON_GREEN:
-    case VIRT_BUTTON_BLUE:
-    case VIRT_BUTTON_VIOLET:
+    case VIRT_BUTTON_5_GREEN:
+    case VIRT_BUTTON_6_BLUE:
+    case VIRT_BUTTON_7_VIOLET:
         unit = " M";
         break;
-    case VIRT_BUTTON_GREY:
-    case VIRT_BUTTON_WHITE:
+    case VIRT_BUTTON_8_GREY:
+    case VIRT_BUTTON_9_WHITE:
         unit = " G";
         break;
 
@@ -186,27 +180,27 @@ void Resistor4BandsCalc::calculateResistorValue()
     // Determine the tolerance
     switch (bandValues[3])
     {
-    case VIRT_BUTTON_BROWN:
+    case VIRT_BUTTON_1_BROWN:
         tolerance_str = "1%";
         valid_tolerance = true;
         break;
-    case VIRT_BUTTON_RED:
+    case VIRT_BUTTON_2_RED:
         tolerance_str = "2%";
         valid_tolerance = true;
         break;
-    case VIRT_BUTTON_GREEN:
+    case VIRT_BUTTON_5_GREEN:
         tolerance_str = "0.5%";
         valid_tolerance = true;
         break;
-    case VIRT_BUTTON_BLUE:
+    case VIRT_BUTTON_6_BLUE:
         tolerance_str = "0.25%";
         valid_tolerance = true;
         break;
-    case VIRT_BUTTON_VIOLET:
+    case VIRT_BUTTON_7_VIOLET:
         tolerance_str = "0.1%";
         valid_tolerance = true;
         break;
-    case VIRT_BUTTON_GREY:
+    case VIRT_BUTTON_8_GREY:
         tolerance_str = "0.05%";
         valid_tolerance = true;
         break;
