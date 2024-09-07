@@ -5,7 +5,7 @@
 
 CircuitMate is a portable, handheld multifunctional electronic tool designed to assist you in your electronics lab. This device is capable of performing various calculations for resistors, capacitors, and SMD components. It also features a built-in guessing game for added entertainment during your electronics projects.
 
-The 3D files and related details can be found on this [Thingiverse page](https://www.thingiverse.com/thing:6741874).
+The 3D files and related details can be found on this [Thingiverse page](https://www.thingiverse.com/thing:6741874) or [MakerWorld page](https://makerworld.com/en/models/626895).
 
 ## Features
 
@@ -22,7 +22,7 @@ The 3D files and related details can be found on this [Thingiverse page](https:/
 
 ## Knob Calibration Instructions
 
-The potentiometer (knob) in CircuitMate may require calibration to ensure it accurately registers its position across all available steps. Typically, this needs to be done once after printing the knob label file (available on the [Thingiverse page](https://www.thingiverse.com/thing:6741874)).
+The potentiometer (knob) in CircuitMate may require calibration to ensure it accurately registers its position across all available steps. Typically, this needs to be done once after printing the knob label file (available on the [Thingiverse page](https://www.thingiverse.com/thing:6741874) or [MakerWorld page](https://makerworld.com/en/models/626895)).
 
 ### Enabling Calibration Mode
 
